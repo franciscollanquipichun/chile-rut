@@ -64,7 +64,7 @@ class ChileRut {
 	 *
 	 * @access		public
 	 *
-	 * @param		string $rut
+	 * @param		string $originalRut
 	 * @param 		boolean $incluyeDigitoVerificador
 	 * @return		string|FALSE
 	 */
@@ -94,7 +94,7 @@ class ChileRut {
 					$cleanedRut .= $chr;
 		}
 		
-		if (strlen($cleanedRut) < 3)
+		if (strlen($cleanedRut) < ($incluyeDigitoVerificador ? 2:1))
 			return false;
 		
 		return $cleanedRut;
@@ -117,6 +117,8 @@ class ChileRut {
 
 		//Preparamos el RUT recibido
 		$numero = $this->clean($rut, false);
+        if($numero === false )
+            return false;
 
 		//Calculamos el dígito verificador
 		$txt		= array_reverse(str_split($numero));
@@ -130,16 +132,11 @@ class ChileRut {
 		$a			= $sum % 11;
 		$b			= 11-$a;
 		
-		if($b == 11)
-			$digitoVerificador	= 0;
+		if($b === 11)
+			return '0';
 		elseif($b == 10)
-			$digitoVerificador	= 'K';
+			return 'K';
 		else
-			$digitoVerificador = $b;
-
-		//Convertimos el número a cadena para efectos de poder comparar
-		$digitoVerificador = (string)$digitoVerificador;
-
-		return $digitoVerificador;
+			return (string)$b; //Convertimos el número a cadena para efectos de poder comparar
 	}
 }
